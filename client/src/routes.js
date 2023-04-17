@@ -20,6 +20,7 @@ export default function Router() {
         { element: <Navigate to="/app" />, index: true },
         { path: 'app', element: <HomePage /> },
         { path: 'user', element: <UserPage /> },
+        { path: 'Event', element: <EventPage /> },
       ],
     },
     {
@@ -27,11 +28,9 @@ export default function Router() {
       element: <LoginPage />,
     },
     {
-     // element: <SimpleLayout />,
-      element: <DashboardLayout />,
+      element: <SimpleLayout />,
       children: [
         { element: <Navigate to="/Event" />, index: true },
-        { path: 'Event', element: <EventPage /> },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
