@@ -7,6 +7,7 @@ import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import HomePage from './pages/HomePage';
+import EventPage from './pages/EventPage';
 
 // ----------------------------------------------------------------------
 
@@ -19,7 +20,6 @@ export default function Router() {
         { element: <Navigate to="/app" />, index: true },
         { path: 'app', element: <HomePage /> },
         { path: 'user', element: <UserPage /> },
-
       ],
     },
     {
@@ -27,9 +27,11 @@ export default function Router() {
       element: <LoginPage />,
     },
     {
-      element: <SimpleLayout />,
+     // element: <SimpleLayout />,
+      element: <DashboardLayout />,
       children: [
-        { element: <Navigate to="/" />, index: true },
+        { element: <Navigate to="/Event" />, index: true },
+        { path: 'Event', element: <EventPage /> },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
