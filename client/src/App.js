@@ -3,6 +3,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from './redux/store';
+import { RealmAppProvider, useRealmApp } from "./components/RealmApp";
+
 // routes
 import Router from './routes';
 // theme
@@ -21,9 +23,11 @@ export default function App() {
         <PersistGate loading={null} persistor={persistor}>
           <BrowserRouter>
             <ThemeProvider>
-              <ScrollToTop />
-              <StyledChart />
-              <Router />
+              <RealmAppProvider appId={process.env.REACT_APP_APPID}>
+                <ScrollToTop />
+                {/* <StyledChart /> */}
+                <Router />
+              </RealmAppProvider>
             </ThemeProvider>
           </BrowserRouter>
         </PersistGate>

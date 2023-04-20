@@ -1,40 +1,8 @@
-#NewEventNameDiv{
-    margin: 0 auto;
-    padding : 20px;
-  width: 180%;
-  font-size:18px;
-}
-
-#NewEventName{
+form input[type=text] {
+  display: block;
   width: 800px;
   height: 35px;
-}
-
-#NewEventLocation{
-  width: 800px;
-  height: 35px;
-}
-
-#NewEventDescription{
-  width: 800px;
-  height: 35px;
-}
-
-
-.date{
-
-  background-color: rgb(201, 90, 90);
-}
-.calendar-container{
-    text-align: center;
-}
-
-.header{
-    text-align: left;
-}
-h1{
-  padding : 20px;
-  font-family: Arial
+  margin: 1rem 0;
 }
 
 .react-calendar {
@@ -67,9 +35,6 @@ abbr[title] {
   text-decoration: none;
 }
  
-/* .react-calendar__month-view__days__day--weekend {
-  color: #d10000;
- } */
  
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {

@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import HomePage from './pages/HomePage';
 import EventPage from './pages/EventPage';
+import EventDetail from './pages/EventDetail';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ export default function Router() {
         { path: 'app', element: <HomePage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'Event', element: <EventPage /> },
+        { path: "Event/:eventId", element: <EventDetail />}
       ],
     },
     {
