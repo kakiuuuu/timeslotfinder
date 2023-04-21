@@ -9,12 +9,17 @@ const navConfig = [
   {
     title: 'Home',
     path: '/app',
-    icon: icon('ic_analytics'),
-  },
-  {
-    title: 'user',
-    path: '/user',
     icon: icon('ic_user'),
+  },
+  // {
+  //   title: 'user',
+  //   path: '/user',
+  //   icon: icon('ic_user'),
+  // },
+  {
+    title: 'compare',
+    path: '/compare',
+    icon: icon('ic_analytics'),
   },
   {
     title: 'Event',

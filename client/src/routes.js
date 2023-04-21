@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import HomePage from './pages/HomePage';
 import EventPage from './pages/EventPage';
+import ComparePage from './pages/ComparePage';
 import EventDetail from './pages/EventDetail';
 import EventResult from './pages/EventResult';
 
@@ -22,6 +23,7 @@ export default function Router() {
         { element: <Navigate to="/app" />, index: true },
         { path: 'app', element: <HomePage /> },
         { path: 'user', element: <UserPage /> },
+        { path: 'compare', element: <ComparePage /> },
         { path: 'event', element: <EventPage /> },
         { path: "event/:eventId", element: <EventDetail />},
         { path: "event/:eventId/result", element: <EventResult />}
