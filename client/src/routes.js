@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import HomePage from './pages/HomePage';
 import EventPage from './pages/EventPage';
+import ComparePage from './pages/ComparePage';
 
 // ----------------------------------------------------------------------
 
@@ -19,7 +20,8 @@ export default function Router() {
       children: [
         { element: <Navigate to="/app" />, index: true },
         { path: 'app', element: <HomePage /> },
-        { path: 'user', element: <UserPage /> },
+        { path: 'user', element: <ComparePage /> },
+        { path: 'Event', element: <EventPage /> },
       ],
     },
     {
