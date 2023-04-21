@@ -123,6 +123,7 @@ export function useEvents(eventId) {
     loading,
     event,
     events,
+    setEvent,
     saveEvent,
     updateEvent,
     deleteEvent,

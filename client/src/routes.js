@@ -9,6 +9,7 @@ import Page404 from './pages/Page404';
 import HomePage from './pages/HomePage';
 import EventPage from './pages/EventPage';
 import EventDetail from './pages/EventDetail';
+import EventResult from './pages/EventResult';
 
 // ----------------------------------------------------------------------
 
@@ -21,8 +22,9 @@ export default function Router() {
         { element: <Navigate to="/app" />, index: true },
         { path: 'app', element: <HomePage /> },
         { path: 'user', element: <UserPage /> },
-        { path: 'Event', element: <EventPage /> },
-        { path: "Event/:eventId", element: <EventDetail />}
+        { path: 'event', element: <EventPage /> },
+        { path: "event/:eventId", element: <EventDetail />},
+        { path: "event/:eventId/result", element: <EventResult />}
       ],
     },
     {

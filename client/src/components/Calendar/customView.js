@@ -98,7 +98,7 @@ const CustomView = ({ event, eventAction }) => {
         return state;
     }
   }, []);
-  // console.log('event>>>>>', event)
+  console.log('event>>>>>', event)
   // console.log('timeSlots<<<<', timeSlots)
   // console.log('selectedSlots>>>>>', selectedSlots)
 
