@@ -149,16 +149,16 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User </title>
+        <title> Event List </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Event List
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+            New Event
           </Button>
         </Stack>
 

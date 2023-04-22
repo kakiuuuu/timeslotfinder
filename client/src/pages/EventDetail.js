@@ -6,6 +6,28 @@ import { useEvents } from 'src/hooks/useEvents'
 import EventAPI from '../api/apiController'
 import CustomView from 'src/components/Calendar/customView'
 
+const sampleEvent = [
+  {
+    "title": "test",
+    "start": new Date("2023-04-26T17:59:57.089Z"),
+    "end": new Date("2023-04-26T18:59:57.090Z"),
+    "allDay": false
+  },
+  {
+    "title": "test event3",
+    "start": new Date("2023-04-23T21:00:00.000Z"),
+    "end": new Date("2023-04-24T02:00:00.000Z"),
+    "allDay": false
+  },
+
+  {
+    "title": "All day event",
+    "start": new Date("2023-04-21T16:00:00.000Z"),
+    "end": new Date("2023-04-22T15:00:00.000Z"),
+    "allDay": false
+  },
+]
+
 const EventDetail = () => {
   let { eventId } = useParams()
   const navigate = useNavigate();
@@ -35,7 +57,7 @@ const EventDetail = () => {
               Share This Link With Your Friends! {`${process.env.REACT_APP_URL}/Event/${eventId}`}
             </Typography>
             <Card>
-              <CustomView event={event} action={eventActions} />
+              <CustomView event={event} action={eventActions} userEvent={sampleEvent}/>
             </Card>
             <Button variant="contained" sx={{ m: '1rem' }} onClick={
               () => {

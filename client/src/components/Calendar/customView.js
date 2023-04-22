@@ -75,7 +75,7 @@ MyWeek.navigate = (date, action) => { }
 
 MyWeek.title = (date) => { }
 
-const CustomView = ({ event, eventAction }) => {
+const CustomView = ({ event, eventAction, userEvent }) => {
   const [timeSlots, setTimeSlots] = useState(JSON.parse(event.slots).reduce((map, [key, value]) => {
     map.set(key, value);
     return map;
@@ -155,6 +155,7 @@ const CustomView = ({ event, eventAction }) => {
   return (
     <div>
       <StyledCalendar
+        backgroundEvents={userEvent}
         toolbar={false}
         selectable
         timeslots={4}

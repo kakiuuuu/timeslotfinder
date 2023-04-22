@@ -11,18 +11,18 @@ const navConfig = [
     path: '/app',
     icon: icon('ic_user'),
   },
-  // {
-  //   title: 'user',
-  //   path: '/user',
-  //   icon: icon('ic_user'),
-  // },
+  {
+    title: 'Your Events',
+    path: '/user',
+    icon: icon('ic_cart'),
+  },
   {
     title: 'compare',
     path: '/compare',
     icon: icon('ic_analytics'),
   },
   {
-    title: 'Event',
+    title: 'New Event',
     path: '/event',
     icon: icon('ic_blog'),
   },
