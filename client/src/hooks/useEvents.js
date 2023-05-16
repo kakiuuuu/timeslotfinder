@@ -28,14 +28,21 @@ export function useEvents(eventId) {
 
   // Fetch all events on load and whenever our collection changes (e.g. if the current user changes)
   React.useEffect(() => {
-    EventCollection.find({}).then((fetchedEvents) => {
-      setEvents(fetchedEvents);
-      if (eventId) {
-        setEvent(fetchedEvents.find((event) => event._id.toString() === eventId));
-      }
-      setLoading(false);
-    });
-  }, [EventCollection]);
+    let shouldUpdate = true;
+    const fetchEvents = EventCollection.find({})
+    if (shouldUpdate) {
+      fetchEvents.then((fetchedEvents) => {
+        setEvents(fetchedEvents);
+        if (eventId) {
+          setEvent(fetchedEvents.find((event) => event._id.toString() === eventId));
+        }
+        setLoading(false);
+      });
+    }
+    return () => {
+      shouldUpdate = false;
+    }
+  }, [EventCollection, eventId]);
 
   // Use a MongoDB change stream to reactively update state when operations succeed
   useWatch(EventCollection, {
@@ -89,11 +96,12 @@ export function useEvents(eventId) {
   });
 
   // Given a draft event, format it and then insert it
-  const saveEvent = async (draftEvent) => {
-    if (draftEvent.summary) {
-      draftEvent._partition = realmApp.currentUser.id;
+  const saveEvent = async (event) => {
+    if (event.summary) {
+      event.owner_id = realmApp.currentUser.id;
+      event.participants = [realmApp.currentUser.id];
       try {
-        await EventCollection.insertOne(draftEvent);
+        await EventCollection.insertOne(event);
       } catch (err) {
         if (err.error.match(/^Duplicate key error/)) {
           console.warn(

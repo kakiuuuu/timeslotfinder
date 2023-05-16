@@ -13,7 +13,7 @@ const navConfig = [
   },
   {
     title: 'Your Events',
-    path: '/user',
+    path: '/eventlist',
     icon: icon('ic_cart'),
   },
   {
