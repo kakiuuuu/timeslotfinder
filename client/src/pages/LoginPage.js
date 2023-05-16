@@ -9,6 +9,8 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+import { useRealmApp } from 'src/components/RealmApp';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -42,11 +44,23 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
+  const realmApp = useRealmApp();
+  const navigate = useNavigate();
+  const googleLogin = async () => {
+    try {
+      const user = await realmApp.logInGoogle();
 
+      console.log("Successfully logged in!", user);
+      navigate('/');
+
+    } catch(err) {  
+      console.error("Failed to log in", err.message);
+    }
+  }
   return (
     <>
       <Helmet>
-        <title> Login | Minimal UI </title>
+        <title> Login </title>
       </Helmet>
 
       <StyledRoot>
@@ -79,7 +93,7 @@ export default function LoginPage() {
             </Typography>
 
             <Stack direction="row" spacing={2}>
-              <Button fullWidth size="large" color="inherit" variant="outlined">
+              <Button fullWidth size="large" color="inherit" variant="outlined" onClick={googleLogin}>
                 <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
               </Button>
             </Stack>

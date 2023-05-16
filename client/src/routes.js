@@ -11,6 +11,7 @@ import EventPage from './pages/EventPage';
 import ComparePage from './pages/ComparePage';
 import EventDetail from './pages/EventDetail';
 import EventResult from './pages/EventResult';
+import { Redirection } from './pages/Redirection';
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ export default function Router() {
       element: <SimpleLayout />,
       children: [
         { element: <Navigate to="/Event" />, index: true },
+        { path: 'redirect', element: <Redirection />},
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],

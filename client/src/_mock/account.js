@@ -2,7 +2,7 @@
 
 const account = {
   displayName: 'Guest',
-  email: 'demo@minimals.cc',
+  email: 'geust@gmail.com',
   photoURL: '/assets/images/avatars/avatar_default.jpg',
 };
 

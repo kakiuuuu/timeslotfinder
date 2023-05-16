@@ -14,6 +14,7 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
+import { useRealmApp } from 'src/components/RealmApp';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +37,8 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
-
+  const realmApp = useRealmApp();
+  const { currentUser } = realmApp;
   const isDesktop = useResponsive('up', 'lg');
 
   useEffect(() => {
@@ -59,15 +61,11 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={account.photoURL} alt="photoURL" />
+            <Avatar src={currentUser.providerType=== "api-key" ? account.photoURL : currentUser._profile.data.pictureUrl} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
-              </Typography>
-
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
+                {currentUser.providerType=== "api-key" ? account.displayName : currentUser._profile.data.lastName }
               </Typography>
             </Box>
           </StyledAccount>

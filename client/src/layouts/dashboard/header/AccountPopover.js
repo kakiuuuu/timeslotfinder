@@ -4,6 +4,8 @@ import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 // mocks_
 import account from '../../../_mock/account';
+import { useRealmApp } from 'src/components/RealmApp';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +28,9 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const realmApp = useRealmApp();
+  const { currentUser } = realmApp;
+  const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -34,6 +39,12 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+
+  const handlelogOut = () => {
+    realmApp.logOut();
+    navigate('/')
+  };
+
 
   return (
     <>
@@ -54,7 +65,7 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <Avatar src={currentUser.providerType === "api-key" ? account.photoURL : currentUser._profile.data.pictureUrl} alt="photoURL" />
       </IconButton>
 
       <Popover
@@ -78,10 +89,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {currentUser.providerType === "api-key" ? account.displayName : currentUser._profile.data.lastName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {currentUser.providerType === "api-key" ? account.email : currentUser._profile.data.email}
           </Typography>
         </Box>
 
@@ -96,10 +107,11 @@ export default function AccountPopover() {
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
-          Logout
-        </MenuItem>
+        {currentUser.providerType === "api-key" ? null :
+          <MenuItem onClick={handlelogOut} sx={{ m: 1 }}>
+            Logout
+          </MenuItem>
+        }
       </Popover>
     </>
   );

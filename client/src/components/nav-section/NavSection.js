@@ -4,6 +4,8 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { Box, List, ListItemText } from '@mui/material';
 //
 import { StyledNavItem, StyledNavItemIcon } from './styles';
+import { useRealmApp } from '../RealmApp';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -12,12 +14,21 @@ NavSection.propTypes = {
 };
 
 export default function NavSection({ data = [], ...other }) {
+  const realmApp = useRealmApp();
+  const { currentUser } = realmApp;
+  const [guest, setGuest] = useState(currentUser.providerType === "api-key");
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
-        {data.map((item) => (
-          <NavItem key={item.title} item={item} />
-        ))}
+        {data.map((item) => {
+          if (item.title === "login" && !guest) {
+            return null;
+          }
+          if (item.title === "Your Events" && guest) {
+            return null;
+          }
+          return <NavItem key={item.title} item={item} />
+        })}
       </List>
     </Box>
   );

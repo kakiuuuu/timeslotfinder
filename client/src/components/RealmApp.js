@@ -27,14 +27,15 @@ export function RealmAppProvider({ appId, children }) {
     [realmApp]
   );
 
-  const [anonymousCredentials, setAnonymousCredentials] = React.useState(Realm.Credentials.anonymous());
-  const logInAnonymously = React.useCallback(async () => {
-    await realmApp.logIn(anonymousCredentials);
-    setCurrentUser(realmApp.currentUser);
-  });
 
   const logInApiKey = React.useCallback(async (apiKey) => {
     const credentials = Realm.Credentials.apiKey(apiKey);
+    await realmApp.logIn(credentials);
+    setCurrentUser(realmApp.currentUser);
+  });
+
+  const logInGoogle = React.useCallback(async () => {
+    const credentials = Realm.Credentials.google({redirectUrl: 'http://localhost:3000/redirect'});
     await realmApp.logIn(credentials);
     setCurrentUser(realmApp.currentUser);
   });
@@ -57,17 +58,18 @@ export function RealmAppProvider({ appId, children }) {
 
   // Override the App's currentUser & logIn properties + include the app-level logout function
   const realmAppContext = React.useMemo(() => {
-    return { ...realmApp, currentUser, logIn, logOut, logInAnonymously };
-  }, [realmApp, currentUser, logIn, logOut, logInAnonymously]);
+    return { ...realmApp, currentUser, logIn, logOut, logInGoogle };
+  }, [realmApp, currentUser, logIn, logOut, logInGoogle]);
 
-  useEffect(() => {
-    // logInAnonymously()
-    logInApiKey(process.env.REACT_APP_REALM_API_KEY)
-    return async () => {
-      await realmApp.currentUser?.logOut();
-      await realmApp.deleteUser(realmApp.currentUser);
-    }
-  }, [])
+ 
+  // useEffect(() => {
+  //   // logInAnonymously()
+  //   logInApiKey(process.env.REACT_APP_REALM_API_KEY)
+  //   return async () => {
+  //     await realmApp.currentUser?.logOut();
+  //     await realmApp.deleteUser(realmApp.currentUser);
+  //   }
+  // }, [])
   
   return (
     <RealmAppContext.Provider value={realmAppContext}>
