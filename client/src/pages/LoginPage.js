@@ -11,6 +11,7 @@ import Iconify from '../components/iconify';
 import { LoginForm } from '../sections/auth/login';
 import { useRealmApp } from 'src/components/RealmApp';
 import { useNavigate } from 'react-router-dom';
+import useGapiCalendar from 'src/hooks/useGapi';
 
 // ----------------------------------------------------------------------
 
@@ -45,12 +46,17 @@ const StyledContent = styled('div')(({ theme }) => ({
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
   const realmApp = useRealmApp();
+  const useGapi = useGapiCalendar({});
+  console.log('useGapi>>>>', useGapi)
+  const { gapi } = useGapi;
   const navigate = useNavigate();
   const googleLogin = async () => {
     try {
-      const user = await realmApp.logInGoogle();
+      const googleAuth = gapi.auth2.getAuthInstance()
+      const googleUser = await googleAuth.signIn();
 
-      console.log("Successfully logged in!", user);
+      const token = googleUser.getAuthResponse().id_token;
+      await realmApp.logInGoogle(token);
       navigate('/');
 
     } catch(err) {  

@@ -9,12 +9,15 @@ import {
   removeValueAtIndex,
   getEventIndex,
 } from "../utils";
+import useGapiCalendar from "./useGapi";
 
 const dataSourceName = process.env.REACT_APP_REALM_DATA_SOURCE_NAME
 
 export function useEvents(eventId) {
   // Set up a list of events in state
   const realmApp = useRealmApp();
+  const useGapi = useGapiCalendar({});
+  const { addGapiCalendarEvent } = useGapi;
   const [event, setEvent] = React.useState(null);
   const [events, setEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -97,11 +100,13 @@ export function useEvents(eventId) {
 
   // Given a draft event, format it and then insert it
   const saveEvent = async (event) => {
-    if (event.summary) {
+    if (event) {
       event.owner_id = realmApp.currentUser.id;
       event.participants = [realmApp.currentUser.id];
+      event.response = 0;
+      event.status = "Arranging";
       try {
-        await EventCollection.insertOne(event);
+        return await EventCollection.insertOne(event);
       } catch (err) {
         if (err.error.match(/^Duplicate key error/)) {
           console.warn(
@@ -118,8 +123,18 @@ export function useEvents(eventId) {
   const updateEvent = async (event) => {
     await EventCollection.updateOne(
       { _id: event._id },
-      { $set: { slots: event.slots } }
+      { $set: { slots: event.slots, participants: event.participants, response: event.response+1 || 1  } }
     );
+  };
+
+  const comfirmEvent = async (event) => {
+    await EventCollection.updateOne(
+      { _id: event._id },
+      { $set: { status: "Confirmed", confirmedDate: event.confirmedDate, confirmedTime: event.confirmedTime } }
+    );
+    const [fetchEvents] = await EventCollection.find({ _id: event._id })
+    console.log('fetchEvents>>>>', fetchEvents)
+    await addGapiCalendarEvent(fetchEvents)
   };
 
   // Delete a given event
@@ -134,6 +149,7 @@ export function useEvents(eventId) {
     setEvent,
     saveEvent,
     updateEvent,
+    comfirmEvent,
     deleteEvent,
   };
 }

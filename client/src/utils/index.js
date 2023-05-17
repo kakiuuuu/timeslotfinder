@@ -32,14 +32,6 @@ export function removeValueAtIndex(arr, idx) {
   return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
 }
 
-export const isSameTodo = (todo1, todo2) =>
-  String(todo1?._id) === String(todo2?._id);
-
-export const getTodoIndex = (todos, todo) => {
-  const idx = todos.findIndex((t) => isSameTodo(t, todo));
-  return idx >= 0 ? idx : null;
-};
-
 export const isSameEvent = (event1, event2) =>
   String(event1?._id) === String(event2?._id);
 
@@ -72,6 +64,46 @@ export const createTimeSlots = (startDateTime, endDateTime, slotDuration, startH
       currentDate.setHours(startHour, 0, 0, 0);
     }
   }
-
+  console.log('timeSlots???>>>>', timeSlots)
   return timeSlots;
 }
+
+export const formatData = (startDateTime, endDateTime, startHour, endHour, timeSlotData, slotDuration=15) => {
+  const startDate = new Date(startDateTime);
+  const endDate = new Date(endDateTime);
+  startHour = Number(startHour);
+  endHour = Number(endHour);
+  timeSlotData = JSON.parse(timeSlotData).reduce((map, [key, value]) => {
+    map.set(key, value);
+    return map;
+  }, new Map())
+  const numDays = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000));
+
+  const data = [];
+
+  for (let hour = startHour; hour < endHour; hour++) {
+    for (let minute = 0; minute < 60; minute += slotDuration) {
+      const id = `${hour}:${minute.toString().padStart(2, '0')}`;
+      let newTimeSlotData =[]
+
+      for (let i = 0; i < numDays; i++) {
+        let currentSlot = new Date(startDate.getTime() + i * (24 * 60 * 60 * 1000));
+        currentSlot.setHours(hour, minute, 0, 0);
+        const dateString = `${currentSlot.getMonth() + 1}-${currentSlot.getDate()}-${currentSlot.getFullYear()}`;
+        let value = timeSlotData.get(currentSlot.toISOString())?.value;
+        // const match = timeSlotData.find(slot => slot[0] === currentSlot.setHours(hour, minute, 0, 0).toISOString());
+
+        newTimeSlotData.push({
+          x: dateString,
+          y: value ?? 0,
+        });
+      }
+
+      data.push({
+        id: id,
+        data: newTimeSlotData,
+      });
+    }
+  }
+  return data;
+};

@@ -57,16 +57,8 @@ const EventDetail = () => {
               Share This Link With Your Friends! {`${process.env.REACT_APP_URL}/Event/${eventId}`}
             </Typography>
             <Card>
-              <CustomView event={event} action={eventActions} userEvent={sampleEvent}/>
+              <CustomView event={event} eventActions={eventActions} userEvent={sampleEvent}/>
             </Card>
-            <Button variant="contained" sx={{ m: '1rem' }} onClick={
-              () => {
-                eventActions.updateEvent({ ...event})
-                navigate(`/event/${eventId}/result`)
-              }
-            }>
-              Submit
-            </Button>
           </div>
         }
       </Container>

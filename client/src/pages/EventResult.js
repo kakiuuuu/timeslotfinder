@@ -1,171 +1,18 @@
 import { Box, Button, Card, Container, Modal, Stack, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEvents } from 'src/hooks/useEvents'
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import CustomView from 'src/components/Calendar/customView'
+import { formatData } from 'src/utils'
+import { useRealmApp } from 'src/components/RealmApp'
+import { Configuration, OpenAIApi } from 'openai'
 
-const data = [{
-  id: '0:00',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '0:15',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '0:30',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '0:45',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '1:00',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '1:15',
-  data: [{ x: '4-28-2023', y: 2 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '1:30',
-  data: [{ x: '4-28-2023', y: 2 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '1:45',
-  data: [{ x: '4-28-2023', y: 2 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '2:00',
-  data: [{ x: '4-28-2023', y: 3 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '2:15',
-  data: [{ x: '4-28-2023', y: 3 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '2:30',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '2:45',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '3:00',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '3:15',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '3:30',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '3:45',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '4:00',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '4:15',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '4:30',
-  data: [{ x: '4-28-2023', y: 3 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '4:45',
-  data: [{ x: '4-28-2023', y: 3 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '5:00',
-  data: [{ x: '4-28-2023', y: 2 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '5:15',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 1 }]
-},
-{
-  id: '5:30',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '5:45',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 2 }]
-},
-{
-  id: '6:00',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '6:15',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '6:30',
-  data: [{ x: '4-28-2023', y: 2 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '6:45',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '7:00',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '7:15',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '7:30',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '7:45',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '8:00',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '8:15',
-  data: [{ x: '4-28-2023', y: 1 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '8:30',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '8:45',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '9:00',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '9:15',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '9:30',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-},
-{
-  id: '9:45',
-  data: [{ x: '4-28-2023', y: 0 }, { x: '4-29-2023', y: 0 }]
-}]
+const openAi = new OpenAIApi(
+  new Configuration({
+    apiKey: process.env.REACT_APP_OPEN_AI_API_KEY,
+  })
+)
 
 const style = {
   position: 'absolute',
@@ -180,17 +27,72 @@ const style = {
 };
 
 const EventDetail = () => {
+  const realmApp = useRealmApp();
   let { eventId } = useParams()
   const navigate = useNavigate();
   const { loading, event, ...eventActions } = useEvents(eventId);
+  const [data, setData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [AIResponse, setAIResponse] = useState({
+    serieId:'',
+    data: {x: ''}
+  })
+  console.log('AIResponse>>>>', AIResponse)
+  const [selectedSlot, setSelectedSlot] = useState({ date: '', time: '' });
+  const handleSelectSlot = (slot) => {
+    console.log('slot>>>>', slot)
+
+    if (event.owner_id === realmApp.currentUser.id) {
+      let [time, date] = slot.id.split('.')
+      setSelectedSlot({ date, time })
+      setOpen(true)
+    }
+  };
+
+  const handleConfirmEvent = async () => {
+    await eventActions.comfirmEvent({ ...event, confirmedDate: selectedSlot.date, confirmedTime: selectedSlot.time })
+    navigate(`/eventlist`);
+  };
+
+  const handleClose = () => setOpen(false);
+
   useEffect(() => {
     if (!event && !loading) {
       navigate(`/404`);
     }
   }, [event, eventId, loading, navigate]);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+
+  useEffect(() => {
+    if (event) {
+      let data = formatData(event?.startDate, event?.endDate, event?.noEarlierThan, event?.noLaterThan, event?.slots)
+      setData(data)
+      console.log('event>>>', event)
+      const content = `
+      You are a program that can select only one time slot for an upcoming event based on the information about an event. You do not need to explain the reason and you can only output in the following format: 
+        {"serieId":"19:00","data":{"x":"1-23-2023"}}
+
+        where the serieId is the time slot and data.x is the date
+        The selected time slot must select from the attendee's reply
+        Event Information:
+        event duration: ${event.druation} hours
+        attendee's reply: "${JSON.stringify(data)}"
+        
+        The value of y represents the attendees available in the date "x" in time "id"
+        The selected time slot should have the highest value of y.
+        Remeber you cannot explain and should only output the result in the format above.
+      `
+      console.log('content>>>', content)
+      const response = openAi.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content }],
+      }).then(response => {
+        let reply = response.data.choices[0].message.content
+        console.log('reply', reply)
+        setAIResponse(JSON.parse(reply))
+      })
+
+    }
+  }, [event])
 
   return (
     <>
@@ -215,10 +117,10 @@ const EventDetail = () => {
               Comfirmation
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              You have selected the time slot: 4: 30 on 4/28/2023
+              {`You have selected the time slot: ${selectedSlot.time} on ${selectedSlot.date}`}
             </Typography>
             <Stack direction="row" alignItems="center" padding={'1rem 0'} gap={1} mb={5}>
-              <Button variant="contained" onClick={handleClose}>Confirm</Button>
+              <Button variant="contained" onClick={handleConfirmEvent}>Confirm</Button>
               <Button variant="outlined" onClick={handleClose}>Close</Button>
             </Stack>
           </Box>
@@ -226,12 +128,18 @@ const EventDetail = () => {
         {event?._id &&
           <>
             <Typography variant="subtitle1">
-              Here is the result of your event!
+              {`Here is the result of your event! There is ${event?.response} response now`}
             </Typography>
+            {(event.owner_id === realmApp.currentUser.id) && (
+              <Typography variant="subtitle1">
+                You can select the time slot that works best for you!
+              </Typography>
+            )
+            }
             <Box sx={{ height: 700 }}>
               <ResponsiveHeatMap
                 data={data}
-                onClick={handleOpen}
+                onClick={handleSelectSlot}
                 margin={{ top: 60, right: 500, bottom: 60, left: 80 }}
                 colors={{
                   type: 'quantize',
@@ -267,32 +175,19 @@ const EventDetail = () => {
                 annotations={[
                   {
                     type: 'rect',
-                    match: {
-                      // formattedValue: '3',
-                      // x: 2,
-                      // serieId: '4-29-2023',
-                      // value: 0,
-                      // data: '4:30',
-                      id: '4:30.4-28-2023',
-                      height: 14.5,
-                      // y: 3,
-
-                    },
-                    note: 'The best time to hold this event is 4:30 on 4-28-2023',
-                    noteX: 300,
+                    match: AIResponse,
+                    size: -1,
+                    note: `The best time to hold this event is ${AIResponse.serieId} on ${AIResponse.data.x}`,
+                    noteX: 200,
                     noteY: -130,
                     offset: 5,
-                    noteTextOffset: 5,
+                    noteTextOffset: 10,
                     borderRadius: 2
                   }
                 ]}
               />
 
             </Box>
-
-            {/* <Card>
-              <CustomView event={event} action={eventActions} />
-            </Card> */}
           </>
         }
       </Container>

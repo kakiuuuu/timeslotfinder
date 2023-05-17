@@ -61,11 +61,11 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={currentUser.providerType=== "api-key" ? account.photoURL : currentUser._profile.data.pictureUrl} alt="photoURL" />
+            <Avatar src={( !currentUser || currentUser.providerType === "api-key") ? account.photoURL : currentUser._profile.data.pictureUrl} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {currentUser.providerType=== "api-key" ? account.displayName : currentUser._profile.data.lastName }
+                {( !currentUser || currentUser.providerType=== "api-key") ? account.displayName : currentUser._profile.data.lastName }
               </Typography>
             </Box>
           </StyledAccount>

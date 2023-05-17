@@ -28,9 +28,8 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
 import { useEvents } from 'src/hooks/useEvents';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +37,7 @@ const TABLE_HEAD = [
   { id: 'eventName', label: 'Event Name', alignRight: false },
   { id: 'date', label: 'Date', alignRight: false },
   { id: 'time', label: 'Time', alignRight: false },
-  { id: 'participant', label: 'Participant', alignRight: false },
+  { id: 'response', label: 'Response', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
@@ -69,7 +68,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_event) => _event.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_event) => _event.eventName.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -83,15 +82,18 @@ export default function EventListPage() {
   const [order, setOrder] = useState('asc');
 
   const [selected, setSelected] = useState([]);
+  const [openMenuId, setOpenMenuId] = useState('null');
 
   const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const navigate = useNavigate();
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event, _id) => {
     setOpen(event.currentTarget);
+    setOpenMenuId(_id);
   };
 
   const handleCloseMenu = () => {
@@ -181,11 +183,11 @@ export default function EventListPage() {
                 />
                 <TableBody>
                   {filterEvents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, eventName, date, status='error', time,  participants } = row;
-                    const selectedEvent = selected.indexOf(eventName) !== -1;
+                    const { _id, eventName, startDate, endDate, status = 'Arranging', time, participants, confirmedDate, confirmedTime, response="0" } = row;
 
+                    const selectedEvent = selected.indexOf(eventName) !== -1;
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedEvent}>
+                      <TableRow hover key={_id.toString()} role="checkbox" selected={selectedEvent}>
                         <TableCell padding="checkbox">
                           <Checkbox checked={selectedEvent} onChange={(event) => handleClick(event, eventName)} />
                         </TableCell>
@@ -198,18 +200,18 @@ export default function EventListPage() {
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{date}</TableCell>
+                        <TableCell align="left">{confirmedDate || `${new Date (startDate).toDateString()} --- ${new Date (endDate).toDateString()}`}</TableCell>
 
-                        <TableCell align="left">{time}</TableCell>
+                        <TableCell align="left">{confirmedTime || "/" }</TableCell>
 
-                        <TableCell align="left">{participants.length}</TableCell>
+                        <TableCell align="left">{response}</TableCell>
 
                         <TableCell align="left">
                           <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
                         </TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(e) => handleOpenMenu(e, _id)} key="1">
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -280,9 +282,9 @@ export default function EventListPage() {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => { navigate(`/event/${openMenuId}/result`) }}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          View Result
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }}>

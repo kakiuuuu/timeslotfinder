@@ -5,37 +5,28 @@ import { Grid, Container, Typography, Stack, Button } from '@mui/material';
 // components
 import { ScheduleComponent, Day, Week, WorkWeek, Month, Agenda, Inject } from '@syncfusion/ej2-react-schedule';
 import Iconify from '../components/iconify';
+import { useRealmApp } from 'src/components/RealmApp';
+import { useEffect, useState } from 'react';
+import useGapiCalendar from 'src/hooks/useGapi';
 
 // ----------------------------------------------------------------------
-const data = [
-  {
-    Id: 1,
-    Subject: 'Meeting',
-    StartTime: new Date(2023, 3, 22, 3, 0),
-    EndTime: new Date(2023, 3, 22, 5, 30),
-  },
-  {
-    Id: 2,
-    Subject: 'Test1',
-    StartTime: new Date(2023, 3, 20, 3, 0),
-    EndTime: new Date(2023, 3, 20, 5, 30),
-  },
-  {
-    Id: 3,
-    Subject: 'Test2',
-    StartTime: new Date(2023, 3, 18, 4, 0),
-    EndTime: new Date(2023, 3, 18, 7, 30),
-  },
-  {
-    Id: 4,
-    Subject: 'Meeting2',
-    StartTime: new Date(2023, 3, 16, 0, 0),
-    EndTime: new Date(2023, 3, 16, 1, 30),
-  },
-];
 
 export default function HomePage() {
-  const theme = useTheme();
+  const realmApp = useRealmApp();
+  const user = realmApp.currentUser;
+  const { loadedGapi } = realmApp
+  const useGapi = useGapiCalendar({calendar: "syncfusion"});
+
+  const { gapiCalendarEvents } = useGapi;
+  console.log('useGapi>>>>', useGapi)
+  console.log('gapiCalendarEvents<<<<>', gapiCalendarEvents)
+  // useEffect(() => {
+  //   if (loadedGapi && user && user.providerType === 'oauth2-google') {
+  //     getCalendar().then((events) => {
+  //       setEvents(events);
+  //     })
+  //   }
+  // }, [loadedGapi, user])
 
   return (
     <>
@@ -55,9 +46,8 @@ export default function HomePage() {
         </Stack>
         <ScheduleComponent
           selectedDate={new Date()}
-          eventSettings={{
-            dataSource: data,
-          }}
+          eventSettings={{ dataSource: gapiCalendarEvents }}
+          currentView="Month"
         >
           <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
         </ScheduleComponent>

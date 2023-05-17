@@ -16,7 +16,7 @@ NavSection.propTypes = {
 export default function NavSection({ data = [], ...other }) {
   const realmApp = useRealmApp();
   const { currentUser } = realmApp;
-  const [guest, setGuest] = useState(currentUser.providerType === "api-key");
+  const [guest, setGuest] = useState(( !currentUser ||currentUser.providerType=== "api-key"));
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>

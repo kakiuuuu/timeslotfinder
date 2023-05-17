@@ -65,7 +65,7 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={currentUser.providerType === "api-key" ? account.photoURL : currentUser._profile.data.pictureUrl} alt="photoURL" />
+        <Avatar src={( !currentUser ||currentUser.providerType=== "api-key") ? account.photoURL : currentUser._profile.data.pictureUrl} alt="photoURL" />
       </IconButton>
 
       <Popover
@@ -89,10 +89,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {currentUser.providerType === "api-key" ? account.displayName : currentUser._profile.data.lastName}
+            {( !currentUser ||currentUser.providerType === "api-key") ? account.displayName : currentUser._profile.data.lastName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {currentUser.providerType === "api-key" ? account.email : currentUser._profile.data.email}
+            {( !currentUser ||currentUser.providerType === "api-key") ? account.email : currentUser._profile.data.email}
           </Typography>
         </Box>
 
@@ -107,7 +107,7 @@ export default function AccountPopover() {
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-        {currentUser.providerType === "api-key" ? null :
+        {( !currentUser ||currentUser.providerType=== "api-key") ? null :
           <MenuItem onClick={handlelogOut} sx={{ m: 1 }}>
             Logout
           </MenuItem>

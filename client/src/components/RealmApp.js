@@ -10,11 +10,21 @@ function createRealmApp(id) {
 const RealmAppContext = React.createContext(null);
 
 export function RealmAppProvider({ appId, children }) {
+  const [loadedGapi, setLoadedGapi] = React.useState(false)
+
+  useEffect(() => {
+    console.log('realmApp.currentUser>>>>>>', realmApp.currentUser)
+    if (!realmApp.currentUser) {
+      logInApiKey(process.env.REACT_APP_REALM_API_KEY)
+      console.log("loginnnnnn!")
+    }
+  }, [])
   // Store Realm.App in React state. If appId changes, all children will rerender and use the new realmApp.
   const [realmApp, setRealmApp] = React.useState(createRealmApp(appId));
   React.useEffect(() => {
     setRealmApp(createRealmApp(appId));
   }, [appId]);
+
   // Store the app's current user in state and wrap the built-in auth functions to modify this state
   const [currentUser, setCurrentUser] = React.useState(realmApp.currentUser);
   console.log('currentUser>>>>>>', currentUser)
@@ -28,14 +38,20 @@ export function RealmAppProvider({ appId, children }) {
   );
 
 
-  const logInApiKey = React.useCallback(async (apiKey) => {
+  const logInApiKey = async (apiKey) => {
     const credentials = Realm.Credentials.apiKey(apiKey);
     await realmApp.logIn(credentials);
     setCurrentUser(realmApp.currentUser);
-  });
+  };
 
-  const logInGoogle = React.useCallback(async () => {
-    const credentials = Realm.Credentials.google({redirectUrl: 'http://localhost:3000/redirect'});
+  const logInGoogle = React.useCallback(async (token) => {
+    if (token) {
+      const credentials = Realm.Credentials.google({ idToken: token });
+      await realmApp.logIn(credentials);
+      setCurrentUser(realmApp.currentUser);
+      return
+    }
+    const credentials = Realm.Credentials.google({ redirectUrl: 'http://localhost:3000/redirect' });
     await realmApp.logIn(credentials);
     setCurrentUser(realmApp.currentUser);
   });
@@ -58,19 +74,9 @@ export function RealmAppProvider({ appId, children }) {
 
   // Override the App's currentUser & logIn properties + include the app-level logout function
   const realmAppContext = React.useMemo(() => {
-    return { ...realmApp, currentUser, logIn, logOut, logInGoogle };
-  }, [realmApp, currentUser, logIn, logOut, logInGoogle]);
+    return { ...realmApp, currentUser, logIn, logOut, logInGoogle, loadedGapi };
+  }, [realmApp, currentUser, logIn, logOut, logInGoogle, loadedGapi]);
 
- 
-  // useEffect(() => {
-  //   // logInAnonymously()
-  //   logInApiKey(process.env.REACT_APP_REALM_API_KEY)
-  //   return async () => {
-  //     await realmApp.currentUser?.logOut();
-  //     await realmApp.deleteUser(realmApp.currentUser);
-  //   }
-  // }, [])
-  
   return (
     <RealmAppContext.Provider value={realmAppContext}>
       {children}

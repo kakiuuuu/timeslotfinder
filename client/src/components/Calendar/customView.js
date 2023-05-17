@@ -1,6 +1,5 @@
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
+import { dateFnsLocalizer } from 'react-big-calendar'
 import TimeGrid from 'react-big-calendar/lib/TimeGrid'
-import * as dates from 'date-arithmetic'
 import format from 'date-fns/format'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
@@ -8,6 +7,10 @@ import getDay from 'date-fns/getDay'
 import enUS from 'date-fns/locale/en-US'
 import { useCallback, useMemo, useReducer, useState } from 'react'
 import { StyledCalendar } from './styles';
+import { Button } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { useRealmApp } from '../RealmApp'
+import useGapiCalendar from 'src/hooks/useGapi'
 
 const locales = {
   'en-US': enUS,
@@ -20,14 +23,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 })
-
-const events = [
-  {
-    title: 'My Event',
-    start: new Date('2015-04-12T13:45:00-05:00'),
-    end: new Date('2015-04-12T14:00:00-05:00')
-  }
-]
 
 function MyWeek({
   date,
@@ -75,11 +70,18 @@ MyWeek.navigate = (date, action) => { }
 
 MyWeek.title = (date) => { }
 
-const CustomView = ({ event, eventAction, userEvent }) => {
+const CustomView = ({ event, eventActions }) => {
   const [timeSlots, setTimeSlots] = useState(JSON.parse(event.slots).reduce((map, [key, value]) => {
     map.set(key, value);
     return map;
   }, new Map()))
+  const navigate = useNavigate();
+  const realmApp = useRealmApp();
+  const { currentUser } = realmApp;
+  const { gapiCalendarLoaded, gapiCalendarEvents } = useGapiCalendar({ calendar: "bigCalendar" });
+
+  console.log('gapiCalendarLoaded>>>', gapiCalendarLoaded)
+  console.log('gapiCalendarEvents>>>>', gapiCalendarEvents)
   const [selectedSlots, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'SET_SELECTED_SLOTS':
@@ -98,7 +100,7 @@ const CustomView = ({ event, eventAction, userEvent }) => {
         return state;
     }
   }, []);
-  console.log('event>>>>>', event)
+  // console.log('event>>>>>', event)
   // console.log('timeSlots<<<<', timeSlots)
   // console.log('selectedSlots>>>>>', selectedSlots)
 
@@ -108,24 +110,12 @@ const CustomView = ({ event, eventAction, userEvent }) => {
       slots.pop()
       console.log('slots>>>', slots)
       dispatch({ type: 'SET_SELECTED_SLOTS', payload: slots });
-      // slots.forEach((slot) => {
-      //   let date = new Date(slot).toISOString()
-      //   // console.log('new Date(slot).toISOString()>>>>>', date)
-      //   if (timeSlots.has(date)) {
-      //     timeSlots.get(date).value += 1
-      //   }
-      // })
-      // eventAction.updateEvent({ ...event, slots:JSON.stringify([...timeSlots]) })
     },
-    [eventAction, event]
+    []
   )
 
-  const components = useMemo(() => ({
-    timeSlotWrapper: test,
-  }), [])
-
   const { defaultDate, views, min, max } = useMemo(() => {
-    let min = new Date()
+    let min = new Date(event.startDate)
     let max = new Date(event.endDate)
     max.setHours(event.noLaterThan, 0, 0, 0)
     min.setHours(event.noEarlierThan, 0, 0, 0)
@@ -141,7 +131,7 @@ const CustomView = ({ event, eventAction, userEvent }) => {
 
   const slotPropGetter = useCallback(
     (date) => {
-      const isSelected = selectedSlots.some(slot => +slot === +date );
+      const isSelected = selectedSlots.some(slot => +slot === +date);
       return {
         className: isSelected ? 'selected-slot' : '',
         // style: {
@@ -153,40 +143,46 @@ const CustomView = ({ event, eventAction, userEvent }) => {
 
 
   return (
-    <div>
-      <StyledCalendar
-        backgroundEvents={userEvent}
-        toolbar={false}
-        selectable
-        timeslots={4}
-        step={15}
-        defaultView={"week"}
-        localizer={localizer}
-        getDrilldownView={() => (null)}
-        // components={components}
-        defaultDate={defaultDate}
-        // date={defaultDate}
-        min={min}
-        max={max}
-        onSelectSlot={handleSelectSlot}
-        style={{ height: 600, padding: '2rem' }}
-        views={views}
-        slotPropGetter={slotPropGetter}
-      />
-    </div>
+    <>
+      <div>
+        <StyledCalendar
+          backgroundEvents={gapiCalendarEvents}
+          toolbar={false}
+          selectable
+          timeslots={4}
+          step={15}
+          defaultView={"week"}
+          localizer={localizer}
+          getDrilldownView={() => (null)}
+          // components={components}
+          defaultDate={defaultDate}
+          // date={defaultDate}
+          min={min}
+          max={max}
+          onSelectSlot={handleSelectSlot}
+          style={{ height: 600, padding: '2rem' }}
+          views={views}
+          slotPropGetter={slotPropGetter} />
+      </div>
+      <Button variant="contained" sx={{ m: '1rem' }} onClick={async () => {
+        let _timeSlots = timeSlots
+        selectedSlots.forEach((slot) => {
+          let date = new Date(slot).toISOString()
+          // console.log('new Date(slot).toISOString()>>>>>', date)
+          if (_timeSlots.has(date)) {
+            _timeSlots.get(date).value += 1
+          }
+        })
+        let slots = JSON.stringify([..._timeSlots])
+        // console.log('slots>>>>>>', { ...event, slots })
+        await eventActions.updateEvent({ ...event, slots, participants: [...event.participants, currentUser.id] })
+        navigate(`/event/${event._id}/result`)
+      }}>
+        Submit
+      </Button>
+    </>
   )
 
 }
 
-
-
-const test = ({ children, value }) => {
-  // console.log('value>>>>>', value)
-  // console.log('children>>>>>', children)
-  return (
-    <div className='selected'>
-      {children}
-    </div>
-  )
-}
 export default CustomView
